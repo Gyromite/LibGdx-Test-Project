@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "C:\\Users\\Gnarly\\Desktop\\testy\\android\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\ic_launcher.png",
+        "source": "C:\\Users\\Gnarly\\Desktop\\testy\\android\\res\\drawable-hdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\Gnarly\\Desktop\\test\\android\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\ic_launcher.png",
+        "source": "C:\\Users\\Gnarly\\Desktop\\test\\android\\res\\drawable-hdpi\\ic_launcher.png"
+    }
+]
