@@ -40,19 +40,20 @@ public class PlayScreen implements Screen {
     private OrthogonalTiledMapRenderer renderer;
     private World world;
     private Box2DDebugRenderer b2dr;
+
     public PlayScreen(MyGdxGame game)
     {
 
         this.game = game;
-        texture = new Texture("badlogic.jpg");
+
         gamecam = new OrthographicCamera();
-        gamePort = new FitViewport(MyGdxGame.V_WIDTH,MyGdxGame.V_HEIGHT, gamecam);
+        gamePort = new FitViewport(MyGdxGame.V_WIDTH / MyGdxGame.PPM,MyGdxGame.V_HEIGHT / MyGdxGame.PPM, gamecam);
         hud = new Hud(game.batch);
         maploader = new TmxMapLoader();
         map = maploader.load("level1.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map);
+        renderer = new OrthogonalTiledMapRenderer(map, 1 / MyGdxGame.PPM);
         gamecam.position.set(gamePort.getWorldWidth()/2, gamePort.getWorldHeight()/2, 0);
-        world = new World(new Vector2(0,0), true);
+        world = new World(new Vector2(0,-10), true);
         b2dr = new Box2DDebugRenderer();
 
         BodyDef bdef = new BodyDef();
@@ -63,9 +64,9 @@ public class PlayScreen implements Screen {
         {
             Rectangle rect = ((RectangleMapObject)object).getRectangle();
             bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set(rect.getX() + rect.getWidth()/2, rect.getY() + rect.getHeight()/2);
+            bdef.position.set((rect.getX() + rect.getWidth()/2)/MyGdxGame.PPM, (rect.getY() + rect.getHeight()/2)/MyGdxGame.PPM);
             body = world.createBody(bdef);
-            shape.setAsBox(rect.getWidth()/2, rect.getHeight()/2);
+            shape.setAsBox((rect.getWidth()/2)/MyGdxGame.PPM, (rect.getHeight()/2)/MyGdxGame.PPM);
             fdef.shape = shape;
             body.createFixture(fdef);
 
@@ -78,12 +79,12 @@ public class PlayScreen implements Screen {
 
     }
     public void handleInput(float dt){
-        if(Gdx.input.isTouched())
-            gamecam.position.x =+ 100 *dt;
 
     }
     public void update(float dt){
+
         handleInput(dt);
+        world.step(1/60f, 6, 2);
         gamecam.update();
         renderer.setView(gamecam);
     }
