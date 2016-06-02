@@ -2,6 +2,7 @@ package com.mygdx.game.Screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,6 +25,8 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.Scenes.Hud;
+import com.mygdx.game.Sprites.MrBlue;
+import com.mygdx.game.Tools.B2WorldCreator;
 
 /**
  * Created by Gnarly on 5/2/2016.
@@ -40,7 +43,7 @@ public class PlayScreen implements Screen {
     private OrthogonalTiledMapRenderer renderer;
     private World world;
     private Box2DDebugRenderer b2dr;
-
+    private MrBlue player;
     public PlayScreen(MyGdxGame game)
     {
 
@@ -55,23 +58,8 @@ public class PlayScreen implements Screen {
         gamecam.position.set(gamePort.getWorldWidth()/2, gamePort.getWorldHeight()/2, 0);
         world = new World(new Vector2(0,-10), true);
         b2dr = new Box2DDebugRenderer();
-
-        BodyDef bdef = new BodyDef();
-        PolygonShape  shape = new PolygonShape();
-        FixtureDef fdef = new FixtureDef();
-        Body body;
-        for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class))
-        {
-            Rectangle rect = ((RectangleMapObject)object).getRectangle();
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth()/2)/MyGdxGame.PPM, (rect.getY() + rect.getHeight()/2)/MyGdxGame.PPM);
-            body = world.createBody(bdef);
-            shape.setAsBox((rect.getWidth()/2)/MyGdxGame.PPM, (rect.getHeight()/2)/MyGdxGame.PPM);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-
-        }
-
+        player = new MrBlue(world);
+        new B2WorldCreator(world, map);
         }
 
     @Override
@@ -79,12 +67,19 @@ public class PlayScreen implements Screen {
 
     }
     public void handleInput(float dt){
+if(Gdx.input.isKeyPressed(Input.Keys.UP))
+    player.b2body.applyLinearImpulse(new Vector2(0,4f), player.b2body.getWorldCenter(), true);
 
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2body.getLinearVelocity().x <= 2)
+            player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2body.getLinearVelocity().x <= 2)
+            player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2body.getWorldCenter(), true);
     }
     public void update(float dt){
 
         handleInput(dt);
         world.step(1/60f, 6, 2);
+        gamecam.position.x = player.b2body.getPosition().x;
         gamecam.update();
         renderer.setView(gamecam);
     }
